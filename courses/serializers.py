@@ -1,8 +1,12 @@
+from datetime import date
+
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from courses.models import Course, Lesson, Subscription
+from courses.services import get_a_link_to_pay_for_the_course
 from courses.validators import LinkToVideoValidator
+from users.models import Payment
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -29,9 +33,23 @@ class CourseSerializer(serializers.ModelSerializer):
             return True
         return False
 
+    def get_payment_link(self, course):
+        user = self.context['request'].user
+        current_date = date.today()
+        Payment.objects.create(
+            user=user,
+            date=current_date,
+            course=course,
+            amount=course.price,
+            method='Наличные'
+        )
+
+        return get_a_link_to_pay_for_the_course(course)
+
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description', 'preview_image', 'number_of_lessons', 'owner', 'lesson', 'signed')
+        fields = ('id', 'title', 'description', 'preview_image', 'number_of_lessons', 'owner', 'lesson', 'signed',
+                  'payment_link',)
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
 
     'rest_framework',
     'django_filters',
@@ -150,3 +151,5 @@ REST_FRAMEWORK = {
 }
 
 NULLABLE = {'blank': True, 'null': True}
+
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
